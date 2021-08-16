@@ -121,6 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     turret.render();
+    detectHit();
+    //triangle.render();
 }
 
 function drawBox(x, y, size, color){
@@ -130,6 +132,8 @@ function drawBox(x, y, size, color){
 
 function detectHit() {
     for (let i = 0; i < arrProjectiles.length; i++) {
-
+        for (let j = 0; j < arrTriangles.length; j++) {
+            
+        }
     }
 };
