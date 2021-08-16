@@ -2,6 +2,8 @@
 let movementDisplay = document.getElementById('buildMenu')
 let game = document.getElementById('game')
 let buildSelect = '';
+let globalCount = 0;
+let score = 0;
 const ctx = game.getContext('2d');
 
 game.setAttribute('class', 'main-game')
@@ -80,9 +82,6 @@ class Turret {
             this.shoot();
         }
 
-  
-
-        
         // course aim 
         if (this.angle + 0.04 < this.aimAngle) {
             this.angle += 0.04;
@@ -95,16 +94,12 @@ class Turret {
         } else if (this.angle - 0.004 < this.aimAngle) {
             this.angle += 0.004;
         }
-
-        /*
-        if (this.aimAngle - this.angle < 0.1) {
-            this.angle -= 0.02;
-        }
-        */
     }
 
     aim() {
         let closestEnemy = findClosestEnemy(this.x, this.y, 30);
+
+    // magic to find angle 
 
         if (closestEnemy !== undefined) {
         this.aimAngle = Math.atan2(closestEnemy[1] - (this.y+15), closestEnemy[0] - (this.x+15));
@@ -121,7 +116,6 @@ class Turret {
     }
 
     shoot() {
-        console.log('Bang');
         const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2);
         arrProjectiles.push(bullet);
     }
@@ -159,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     turret = new Turret(600, 200, Math.PI*0.5);
     arrTriangles.push(triangle);
     arrTurrets.push(turret);
-    spawn5Triangles(0, 200);
+    // spawn5Triangles(0, 200);
 
 // ==========================DEBUGGING===========================
 
@@ -176,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Create Thing at Click
 game.addEventListener("click", function(e) {
     if (buildSelect === 'triangle') {
-        const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 0);
+        const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 1);
         arrTriangles.push(triangle);
         console.log(arrTriangles[arrTriangles.length - 1].y);
         console.log(arrTriangles[arrTriangles.length - 1].x)
@@ -221,6 +215,8 @@ document.addEventListener('keydown', function(evt) {
     ctx.clearRect(0, 0, game.width, game.height);
     despawn(arrTriangles);
     despawn(arrProjectiles);
+    globalCount++;
+    spawnRandomTriangles(2);
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
@@ -247,11 +243,21 @@ function detectHit() {
                 {
                     arrProjectiles.splice(i, 1);
                     arrTriangles.splice(j, 1);
+                    score += 1;
+                    document.getElementById('score').innerText = score;
                 }
             }
         }
     }
 };
+
+function spawnRandomTriangles(frequency) {
+    if (globalCount % frequency === 0) {
+        const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
+        arrTriangles.push(triangle);
+    }
+}
+
 
 function spawn5Triangles(x, y) {
     for (let i = 0; i < 5; i++) {
@@ -288,20 +294,25 @@ function findClosestEnemy(x, y) {
     closestEnemy[0] += 10.5;
     closestEnemy[1] -= 2;
     // let's try to lead the enemy
+    // distance * speed / bullet speed 
+    // I'm still slightly off but not sure how, it's definitely an improvement though 
+    if (closestEnemy[3] !== 0) {
+    closestEnemy[0] += (closestEnemy[2] * closestEnemy[3] / 2);
+    }
     return closestEnemy; 
 }
+
 
 // Gets ride of offscreen items;
 function despawn(arr) {
     for (let i = 0; i < arr.length; i++) {
         if (
-            arr[i].x < -10 || arr[i].x > 900 
+            arr[i].x < -50 || arr[i].x > 900 
             ||
-            arr[i].y < -10 || arr[i].y > 460
+            arr[i].y < -50 || arr[i].y > 460
         ) {
             arr.splice(i, 1);
             i--;
-            console.log('Cut')
         }
     }
 }
