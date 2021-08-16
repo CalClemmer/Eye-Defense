@@ -1,6 +1,7 @@
 //
 let movementDisplay = document.getElementById('buildMenu')
 let game = document.getElementById('game')
+let buildSelect = '';
 const ctx = game.getContext('2d');
 
 game.setAttribute('class', 'main-game')
@@ -38,13 +39,17 @@ class Triangle {
 
 
 class Turret {
-    constructor(x, y, angle) {
+    constructor(x, y) {
         this.x = x
         this.y = y
-        this.angle = angle;
+        this.angle = Math.PI;
+        this.aimAngle = undefined;
+        this.aimCount = 0;
     }
 
     render() {
+        this.aimCount += 1;
+
         let width = 30;
         let height = 30;
         let turretCenter = [4, 0]
@@ -66,7 +71,50 @@ class Turret {
         ctx.arc(this.x + 15, this.y + 15, 12, 0, Math.PI * 2, true);
         ctx.fill();
 
-        this.angle += 0.01;
+        if (this.aimCount % 10 === 0) {
+            this.aim();
+        } 
+
+        if (this.aimCount % 70 === 0 && arrTriangles.length > 0) {
+            this.shoot();
+        }
+
+  
+
+        
+        // course aim 
+        if (this.angle + 0.04 < this.aimAngle) {
+            this.angle += 0.04;
+        } else if (this.angle - 0.04 > this.aimAngle) {
+            this.angle -= 0.04;
+
+        // fine aim 
+        } else if (this.angle + 0.004 < this.aimAngle) {
+            this.angle += 0.004;
+        } else if (this.angle - 0.004 < this.aimAngle) {
+            this.angle += 0.004;
+        }
+
+        /*
+        if (this.aimAngle - this.angle < 0.1) {
+            this.angle -= 0.02;
+        }
+        */
+    }
+
+    aim() {
+        let closestEnemy = findClosestEnemy(this.x, this.y, 30);
+
+        if (closestEnemy !== undefined) {
+        this.aimAngle = Math.atan2(closestEnemy[1] - (this.y+15), closestEnemy[0] - (this.x+15));
+        } else {
+            this.aimAngle = Math.PI;
+        }
+
+        // this code lets it complete the circle! 
+        if ((this.aimAngle + 2*Math.PI - this.angle) < Math.PI) {
+        this.aimAngle += 2*Math.PI;
+        }
     }
 
     shoot() {
@@ -74,6 +122,7 @@ class Turret {
         const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2);
         arrProjectiles.push(bullet);
     }
+;
     /*
     shoot() {
        bullet = new Bullet(this.x + 15, this.y, this.angle, 1.5);
@@ -104,7 +153,7 @@ class Bullet {
 
 document.addEventListener('DOMContentLoaded', function() {
     triangle = new Triangle(100, 200, '#228B22', 21, 1);
-    turret = new Turret(600, 200, Math.PI*.75);
+    turret = new Turret(600, 200, Math.PI*0.5);
     arrTriangles.push(triangle);
     turret.shoot();
     spawn5Triangles(0, 200);
@@ -112,18 +161,26 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================DEBUGGING===========================
 
 // Create Bullet at Click
+/*
     game.addEventListener("click", function(e) {
         const bullet = new Bullet(e.offsetX, e.offsetY, 0, 0);
         arrProjectiles.push(bullet);
         console.log(arrProjectiles[arrProjectiles.length - 1].y);
         console.log(arrProjectiles[arrProjectiles.length - 1].x)
     })
-// Create Triangle at Click
+*/
+
+// Create Thing at Click
 game.addEventListener("click", function(e) {
-    const triangle = new Triangle(e.offsetX, e.offsetY, 0, 0);
-    arrProjectiles.push(bullet);
-    console.log(arrProjectiles[arrProjectiles.length - 1].y);
-    console.log(arrProjectiles[arrProjectiles.length - 1].x)
+    if (buildSelect = 'triangle') {
+        const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 0);
+        arrTriangles.push(triangle);
+        console.log(arrTriangles[arrTriangles.length - 1].y);
+        console.log(arrTriangles[arrTriangles.length - 1].x)
+    }
+    if (buildSelect = 'turret') {
+        const turret = new Turret(e.offsetX, e.offsetY, Math)
+    }
 })
 // Fire Gun on B
     document.addEventListener('keydown', function(evt) {
@@ -132,10 +189,11 @@ game.addEventListener("click", function(e) {
         }
     })
 
-// Find Closest Enemy to Turret on F
+// Aim Turret on F
     document.addEventListener('keydown', function(evt) {
         if (evt.key === 'f') {
-        findClosestEnemy(600, 200);
+        turret.aim();
+        console.log('aimAngle, angle', turret.aimAngle, turret.angle);
         }
     })
     // this should be 20ms
@@ -165,6 +223,7 @@ function detectHit() {
     if (arrProjectiles.length > 0 && arrTriangles.length > 0)
     for (let i = 0; i < arrProjectiles.length; i++) {
         for (let j = 0; j < arrTriangles.length; j++) {
+            if (arrProjectiles[i] && arrTriangles[j].x) {
             if (arrProjectiles[i].x < arrTriangles[j].x + arrTriangles[j].length &&
                 arrProjectiles[i].x > arrTriangles[j].x &&
                 arrProjectiles[i].y > arrTriangles[j].y - 18 &&
@@ -174,6 +233,7 @@ function detectHit() {
                     arrProjectiles.splice(i, 1);
                     arrTriangles.splice(j, 1);
                 }
+            }
         }
     }
 };
@@ -184,7 +244,6 @@ function spawn5Triangles(x, y) {
     arrTriangles.push(triangle);
     }
 }
-
 /*
 function spawnTestTriangle(x, y) {
     for (let i = 0; i < 5; i++) {
@@ -193,22 +252,26 @@ function spawnTestTriangle(x, y) {
     }
 }
 */
-
-function findClosestEnemy(x, y) {
-    let closestEnemy = [x, y, 0]; // x, y, and distance
+function findClosestEnemy(x, y, width) {
+    //x = x + width/2;
+    //y = y + width/2;
+    let closestEnemy = [x, y, 10000]; // x, y, and distance
 
     // Make sure there are actually enemies 
     if (arrTriangles.length === 0 ) {
         return undefined
     }
 
+    // Simple pythagorean theorem for distance 
     for (let i = 0; i < arrTriangles.length; i++) {
         let distance = ((arrTriangles[i].x - x) ** 2 + (arrTriangles[i].y - y) ** 2) ** 0.5;
-        if (distance > closestEnemy[2]) {
+        if (distance < closestEnemy[2]) {
             closestEnemy = [arrTriangles[i].x, arrTriangles[i].y, distance]
         }
     }
-    console.log(closestEnemy);
+    // hacky fix to aim for center...
+    closestEnemy[0] += 10.5;
+    closestEnemy[1] -= 2;
     return closestEnemy; 
 }
 
