@@ -4,7 +4,6 @@ let game = document.getElementById('game')
 let buildSelect = '';
 let globalCount = 0;
 let score = 0;
-let money = 300;
 const ctx = game.getContext('2d');
 
 game.setAttribute('class', 'main-game')
@@ -16,8 +15,6 @@ game.setAttribute("width", getComputedStyle(game)["width"]);
 const arrProjectiles = [];
 const arrTriangles = [];
 const arrTurrets = [];
-const arrSpinners = [];
-// const arrSquares = [];
 
 class Triangle {
     constructor(x, y, color, length, speed) {
@@ -40,106 +37,6 @@ class Triangle {
         ctx.fill();
     
         this.x += this.speed;
-    }
-}
-
-/* 
-class RedTriangle {
-    constructor(x, y, color, length, speed) {
-        this.x = x
-        this.y = y
-        this.color = color
-        this.length = length
-        this.speed = speed
-        this.alive = true
-    }
-
-    render() {
-    // Draw a Triangle
-    ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x + this.length, this.y);
-        ctx.lineTo(this.x + (0.5 * this.length), this.y - (0.8660254 * this.length));
-        // ctx.fillStyle = '#228B22';
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    
-        this.x += this.speed;
-    }
-}
-*/
-
-class Spinner {
-    constructor(x, y) {
-        this.x = x
-        this.y = y
-        this.angle = Math.PI;
-        this.cooldownCount = 0;
-        this.count = 0; 
-        this.spinSpeed = 0.03;
-        this.cooldown = false;
-    }
-
-    render() {
-    // draw bottom circle
-        this.count++;
-        ctx.beginPath();
-        ctx.fillStyle = "gray";
-        ctx.arc(this.x, this.y, 12, 0, Math.PI * 2, true);
-        ctx.fill();
-
-    // draw spinner 
-        ctx.fillStyle = 'brown';
-        ctx.save();
-        ctx.translate( this.x, this.y);
-        ctx.rotate(this.angle - Math.PI/2);
-        ctx.fillRect(-3, -23, 6, 46);
-        ctx.restore();
-    // draw top circle 
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 6, 0, Math.PI * 2, true);
-        ctx.fillStyle = "orange";
-        ctx.fill();
-
-        this.angle += this.spinSpeed;
-
-    // should speed up, fire, then slow down
-        if (this.cooldownCount === 0) {
-            this.spinUp();
-            this.cooldown = false;
-        } else if (this.cooldown === false &&  this.cooldownCount < 300) {
-            this.spinSpeed += 0.0015;
-            this.shoot();
-            this.cooldownCount += 6;
-        } else {
-            if (this.spinSpeed > 0.03) {
-            this.spinSpeed -= 0.0006
-        }
-            this.cooldown = true;
-            this.cooldownCount--;
-        }
-
-    }
-
-    spinUp() {
-        if ((findClosest(this.x, this.y, arrTriangles, 'distance')) < 70) {
-            this.spinSpeed += 0.002;
-        } else if (this.spinSpeed > 0.03) {
-            this.spinSpeed -= 0.002;
-        }
-
-        if (this.spinSpeed > 0.12) {
-            this.cooldownCount = 30;
-        }
-    }
-
-    shoot() {
-        if (this.count % 2 === 0) {
-        const bullet = new Bullet(this.x, this.y, this.angle, 2, 2, 50);
-        arrProjectiles.push(bullet);
-        const bullet2 = new Bullet(this.x, this.y, this.angle + Math.PI, 2, 2, 50);
-        arrProjectiles.push(bullet2);
-        }
     }
 }
 
@@ -219,7 +116,7 @@ class Turret {
     }
 
     shoot() {
-        const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2, 3, 800);
+        const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2);
         arrProjectiles.push(bullet);
     }
 ;
@@ -231,25 +128,21 @@ class Turret {
 }
 
 class Bullet {
-    constructor(x, y, angle, speed, size, range) {
+    constructor(x, y, angle, speed) {
         this.x = x
         this.y = y
         this.angle = angle
         this.speed = speed
-        this.size = size;
-        this.range = range;
-        this.count = 0;
     } 
 
     render() {
         ctx.beginPath();
         ctx.fillStyle = "white";
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
+        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2, true);
         ctx.fill();
 
         this.x += this.speed * Math.cos(this.angle);
         this.y += +1 * this.speed * Math.sin(this.angle);
-        this.count++;
     }
 
 }
@@ -258,10 +151,8 @@ class Bullet {
 document.addEventListener('DOMContentLoaded', function() {
     triangle = new Triangle(100, 200, '#228B22', 21, 1);
     turret = new Turret(600, 200, Math.PI*0.5);
-    spinner = new Spinner(500, 250);
     arrTriangles.push(triangle);
     arrTurrets.push(turret);
-    arrTurrets.push(spinner);
     // spawn5Triangles(0, 200);
 
 // ==========================DEBUGGING===========================
@@ -278,41 +169,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Create Thing at Click
 game.addEventListener("click", function(e) {
-    /* 
-        if (buildSelect === 'triangle') {
+    if (buildSelect === 'triangle') {
         const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 1);
         arrTriangles.push(triangle);
         console.log(arrTriangles[arrTriangles.length - 1].y);
-        console.log(arrTriangles[arrTriangles.length - 1].x);
-        console.log(arrTriangles[arrTriangles.length -1]);
+        console.log(arrTriangles[arrTriangles.length - 1].x)
     }
-    */
-
     if (buildSelect === 'turret') {
-        if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0
-        ) {
+        if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35) {
             const turret = new Turret(e.offsetX - 15, e.offsetY - 15)
             arrTurrets.push(turret);
         } else {
             console.log(findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance'))
         }
-    } 
-/* 
-    if (buildSelect === 'redTriangle') {
-        const redTriangle = new RedTriangle(e.offsetX, e.offsetY, 'red', 24, 1);
-        arrTriangles.push(redTriangle);
-    } 
-*/ 
+    }
 })
 
 document.addEventListener('keydown', function(evt) {
     if (evt.key === 't') {
-      if (buildSelect === 'spinner') {
+      if (buildSelect === 'triangle') {
           buildSelect = 'turret';
       } else {
-          buildSelect = 'spinner';
-      } 
-      
+          buildSelect = 'triangle';
+      }
     }
 })
 
@@ -340,17 +219,13 @@ document.addEventListener('keydown', function(evt) {
     ctx.clearRect(0, 0, game.width, game.height);
     despawn(arrTriangles);
     despawn(arrProjectiles);
-    //despawn(arrSquares);
     globalCount++;
-    spawnRandomTriangles(100 - 5*Math.sqrt(score));
+    spawnRandomTriangles(3);
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
-    // arrSpinners.forEach(element => element.render());
-    // arrSquares.forEach(element => element.render());
-    detectBulletHit(arrTriangles);
+    detectHit();
     detectTurretHit();
-    bulletRange();
     //triangle.render();
 }
 
@@ -359,23 +234,22 @@ function drawBox(x, y, size, color){
     ctx.fillRect(x, y, size, size);
 }
 
-function detectBulletHit(arr) {
+function detectHit() {
     // triangle collision. Right now they have square collision boxes but that's good enough for now.
-    if (arrProjectiles.length > 0 && arr.length > 0)
+    if (arrProjectiles.length > 0 && arrTriangles.length > 0)
     for (let i = 0; i < arrProjectiles.length; i++) {
-        for (let j = 0; j < arr.length; j++) {
-            if (arrProjectiles[i] && arr[j].x) {
-            if (arrProjectiles[i].x < arr[j].x + arr[j].length &&
-                arrProjectiles[i].x > arr[j].x &&
-                arrProjectiles[i].y > arr[j].y - 18 &&
-                arrProjectiles[i].y < arr[j].y + 2
+        for (let j = 0; j < arrTriangles.length; j++) {
+            if (arrProjectiles[i] && arrTriangles[j].x) {
+            if (arrProjectiles[i].x < arrTriangles[j].x + arrTriangles[j].length &&
+                arrProjectiles[i].x > arrTriangles[j].x &&
+                arrProjectiles[i].y > arrTriangles[j].y - 18 &&
+                arrProjectiles[i].y < arrTriangles[j].y + 2
                 ) 
                 {
                     arrProjectiles.splice(i, 1);
-                    arr.splice(j, 1);
+                    arrTriangles.splice(j, 1);
                     score += 1;
-                    document.getElementById('score').innerText = 'Score: ' + score;
-                    document.getElementById('money').innerText = 'Money: ' + money;
+                    document.getElementById('score').innerText = score;
                 }
             }
         }
@@ -402,17 +276,11 @@ function detectTurretHit() {
 }
 
 function spawnRandomTriangles(frequency) {
-    if (frequency < 1) {
-        frequency = 1;
-    } else {
-        frequency = Math.round(frequency);
-    }
-    
     if (globalCount % frequency === 0) {
         let escape = 0;
         const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
         while (escape < 10) {
-            if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > 29 || arrTriangles.length === 0) {
+            if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > 28) {
                 escape = 10;
                 arrTriangles.push(triangle);
             } else {
@@ -487,15 +355,6 @@ function despawn(arr) {
             arr[i].y < -50 || arr[i].y > 460
         ) {
             arr.splice(i, 1);
-            i--;
-        }
-    }
-}
-
-function bulletRange() {
-    for (let i = 0; i < arrProjectiles.length; i++) {
-        if (arrProjectiles[i].count > arrProjectiles[i].range) {
-            arrProjectiles.splice(i, 1);
             i--;
         }
     }
