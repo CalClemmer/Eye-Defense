@@ -4,7 +4,9 @@ let game = document.getElementById('game')
 let buildSelect = '';
 let globalCount = 0;
 let score = 0;
-let money = 300;
+let money = 30000;
+let p = true;
+let lost = false;
 const ctx = game.getContext('2d');
 
 game.setAttribute('class', 'main-game')
@@ -122,7 +124,7 @@ class Spinner {
     }
 
     spinUp() {
-        if ((findClosest(this.x, this.y, arrTriangles, 'distance')) < 70) {
+        if ((findClosest(this.x, this.y, arrTriangles, 'distance')) < 120) {
             this.spinSpeed += 0.002;
         } else if (this.spinSpeed > 0.03) {
             this.spinSpeed -= 0.002;
@@ -135,9 +137,9 @@ class Spinner {
 
     shoot() {
         if (this.count % 2 === 0) {
-        const bullet = new Bullet(this.x, this.y, this.angle, 2, 2, 50);
+        const bullet = new Bullet(this.x, this.y, this.angle, 2, 2, 80);
         arrProjectiles.push(bullet);
-        const bullet2 = new Bullet(this.x, this.y, this.angle + Math.PI, 2, 2, 50);
+        const bullet2 = new Bullet(this.x, this.y, this.angle + Math.PI, 2, 2, 80);
         arrProjectiles.push(bullet2);
         }
     }
@@ -278,6 +280,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Create Thing at Click
 game.addEventListener("click", function(e) {
+    if (lost === false) {
+        p = false;
+    }
     /* 
         if (buildSelect === 'triangle') {
         const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 1);
@@ -287,23 +292,29 @@ game.addEventListener("click", function(e) {
         console.log(arrTriangles[arrTriangles.length -1]);
     }
     */
+        if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0) {
 
-    if (buildSelect === 'turret') {
-        if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0
-        ) {
+            if (buildSelect === 'turret' && money >= 100) {
             const turret = new Turret(e.offsetX - 15, e.offsetY - 15)
             arrTurrets.push(turret);
-        } else {
-            console.log(findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance'))
+            money -= 100;
+            document.getElementById('money').innerText = 'Money: ' + money;
+
+            }   else if (buildSelect === 'spinner' && money >= 200) {
+            const spinner = new Spinner(e.offsetX, e.offsetY)
+            arrTurrets.push(spinner);
+            money -= 200;
+            document.getElementById('money').innerText = 'Money: ' + money;
+            }  
         }
-    } 
+})
 /* 
     if (buildSelect === 'redTriangle') {
         const redTriangle = new RedTriangle(e.offsetX, e.offsetY, 'red', 24, 1);
         arrTriangles.push(redTriangle);
     } 
 */ 
-})
+
 
 document.addEventListener('keydown', function(evt) {
     if (evt.key === 't') {
@@ -336,13 +347,14 @@ document.addEventListener('keydown', function(evt) {
 
 
   function gameLoop() {
+    if (p === false) {
     // Clear the Cavas
     ctx.clearRect(0, 0, game.width, game.height);
     despawn(arrTriangles);
     despawn(arrProjectiles);
     //despawn(arrSquares);
     globalCount++;
-    spawnRandomTriangles(100 - 5*Math.sqrt(score));
+    spawnRandomTriangles(100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
@@ -351,7 +363,9 @@ document.addEventListener('keydown', function(evt) {
     detectBulletHit(arrTriangles);
     detectTurretHit();
     bulletRange();
+    checkLose(arrTriangles);
     //triangle.render();
+    }
 }
 
 function drawBox(x, y, size, color){
@@ -374,6 +388,7 @@ function detectBulletHit(arr) {
                     arrProjectiles.splice(i, 1);
                     arr.splice(j, 1);
                     score += 1;
+                    money += 5;
                     document.getElementById('score').innerText = 'Score: ' + score;
                     document.getElementById('money').innerText = 'Money: ' + money;
                 }
@@ -411,6 +426,8 @@ function spawnRandomTriangles(frequency) {
     if (globalCount % frequency === 0) {
         let escape = 0;
         const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
+
+        
         while (escape < 10) {
             if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > 29 || arrTriangles.length === 0) {
                 escape = 10;
@@ -419,7 +436,7 @@ function spawnRandomTriangles(frequency) {
                 triangle.y = Math.random()*400 + 20;
                 escape ++;
             }
-            
+        
         }
     
     }
@@ -482,12 +499,21 @@ function findClosest(x, y, arr, value) {
 function despawn(arr) {
     for (let i = 0; i < arr.length; i++) {
         if (
-            arr[i].x < -50 || arr[i].x > 900 
+            arr[i].x < -50 || arr[i].x > 950 
             ||
             arr[i].y < -50 || arr[i].y > 460
         ) {
             arr.splice(i, 1);
             i--;
+        }
+    }
+}
+
+function checkLose(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i].x > 920) {
+            lost = true;
+            p = true;
         }
     }
 }
