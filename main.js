@@ -1,24 +1,26 @@
-//
-let movementDisplay = document.getElementById('buildMenu')
+// ==================GLOBAL VARIABLES=================
+let messageDisplay = document.getElementById('messageDisplay')
 let game = document.getElementById('game')
 let buildSelect = '';
 let globalCount = 0;
 let score = 0;
-let money = 30000;
+let money = 600;
 let p = true;
 let lost = false;
 const ctx = game.getContext('2d');
-
-game.setAttribute('class', 'main-game')
-game.setAttribute("height", getComputedStyle(game)["height"]);
-game.setAttribute("width", getComputedStyle(game)["width"]);
-
-// ======================ENTITIES==========================
 
 const arrProjectiles = [];
 const arrTriangles = [];
 const arrTurrets = [];
 const arrSpinners = [];
+
+game.setAttribute('class', 'main-game')
+game.setAttribute("height", getComputedStyle(game)["height"]);
+game.setAttribute("width", getComputedStyle(game)["width"]);
+
+// ======================CLASSES==========================
+
+
 // const arrSquares = [];
 
 class Triangle {
@@ -221,7 +223,7 @@ class Turret {
     }
 
     shoot() {
-        const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2, 3, 800);
+        const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2, 3, 800); 
         arrProjectiles.push(bullet);
     }
 ;
@@ -256,14 +258,14 @@ class Bullet {
 
 }
 
-
+// ======================EVENT LISTENERS=======================
 document.addEventListener('DOMContentLoaded', function() {
-    triangle = new Triangle(100, 200, '#228B22', 21, 1);
-    turret = new Turret(600, 200, Math.PI*0.5);
-    spinner = new Spinner(500, 250);
-    arrTriangles.push(triangle);
-    arrTurrets.push(turret);
-    arrTurrets.push(spinner);
+    // triangle = new Triangle(100, 200, '#228B22', 21, 1);
+    // turret = new Turret(600, 200, Math.PI*0.5);
+    // spinner = new Spinner(500, 250);
+    // arrTriangles.push(triangle);
+    //arrTurrets.push(turret);
+    //arrTurrets.push(spinner);
     // spawn5Triangles(0, 200);
 
 // ==========================DEBUGGING===========================
@@ -282,7 +284,23 @@ document.addEventListener('DOMContentLoaded', function() {
 game.addEventListener("click", function(e) {
     if (lost === false) {
         p = false;
+        messageDisplay.innerText = 'Click to Place Towers!'
+        document.getElementById('secondMessage').innerText = 'Kill 1500 Triangles to Win!'
     }
+// Making sure I can't spawn it off screen
+    if (e.offsetX - 15 > 10 && e.offsetY - 15 > 10 && e.offsetX - 15 < 840 && e.offsetY - 15 < 400 && 
+        (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0)) {
+
+        if (money >= 100) {
+        const turret = new Turret(e.offsetX - 15, e.offsetY - 15)
+        arrTurrets.push(turret);
+        money -= 100;
+        document.getElementById('money').innerText = 'Money: ' + money;
+
+        } 
+    }
+})
+
     /* 
         if (buildSelect === 'triangle') {
         const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 1);
@@ -292,6 +310,8 @@ game.addEventListener("click", function(e) {
         console.log(arrTriangles[arrTriangles.length -1]);
     }
     */
+
+    /*
         if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0) {
 
             if (buildSelect === 'turret' && money >= 100) {
@@ -308,6 +328,8 @@ game.addEventListener("click", function(e) {
             }  
         }
 })
+
+*/
 /* 
     if (buildSelect === 'redTriangle') {
         const redTriangle = new RedTriangle(e.offsetX, e.offsetY, 'red', 24, 1);
@@ -345,6 +367,7 @@ document.addEventListener('keydown', function(evt) {
     const runGame = setInterval(gameLoop, 20);
   })
 
+//============================CORE GAME LOOP=============================
 
   function gameLoop() {
     if (p === false) {
@@ -354,7 +377,7 @@ document.addEventListener('keydown', function(evt) {
     despawn(arrProjectiles);
     //despawn(arrSquares);
     globalCount++;
-    spawnRandomTriangles(100 - 4*Math.sqrt(score));
+    spawnRandomTriangles(109 + (-14.8*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
@@ -364,9 +387,12 @@ document.addEventListener('keydown', function(evt) {
     detectTurretHit();
     bulletRange();
     checkLose(arrTriangles);
+    checkWin(arrTriangles);
     //triangle.render();
     }
 }
+
+//===============================FUNCTIONS==============================
 
 function drawBox(x, y, size, color){
     ctx.fillStyle = color;
@@ -388,7 +414,7 @@ function detectBulletHit(arr) {
                     arrProjectiles.splice(i, 1);
                     arr.splice(j, 1);
                     score += 1;
-                    money += 5;
+                    money += 2;
                     document.getElementById('score').innerText = 'Score: ' + score;
                     document.getElementById('money').innerText = 'Money: ' + money;
                 }
@@ -417,12 +443,20 @@ function detectTurretHit() {
 }
 
 function spawnRandomTriangles(frequency) {
+    if (frequency > 100) {
+        frequency = 100;
+    }
     if (frequency < 1) {
         frequency = 1;
     } else {
         frequency = Math.round(frequency);
     }
+
     
+    if (Math.random() < 0.01) {
+        console.log(frequency);
+    }
+
     if (globalCount % frequency === 0) {
         let escape = 0;
         const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
@@ -514,9 +548,22 @@ function checkLose(arr) {
         if (arr[i].x > 920) {
             lost = true;
             p = true;
+            ctx.fillStyle = 'red'
+            ctx.font = "80px Andale Mono"
+            ctx.fillText("GAME OVER", 240, 240)
         }
     }
 }
+
+function checkWin(arr) {
+    if (score > 1500) {
+        lost = true;
+        p = true;
+        ctx.fillStyle = 'goldenrod'
+        ctx.font = "80px Andale Mono"
+        ctx.fillText("YOU WIN!", 250, 240)
+        }
+    }
 
 function bulletRange() {
     for (let i = 0; i < arrProjectiles.length; i++) {
