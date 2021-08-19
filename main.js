@@ -10,7 +10,8 @@ let lost = false;
 let won = false;
 const ctx = game.getContext('2d');
 let eyeball = new Image();
-eyeball.src = 'Eyeball.png'
+eyeball.src = 'Eyeball.png';
+let winPause = 0;
 
 const arrProjectiles = [];
 const arrTriangles = [];
@@ -289,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // =====================Create Thing at Click====================
 game.addEventListener("click", function(e) {
-    if (lost === false) {
+    if (lost === false && winPause < globalCount) {
         p = false;
         messageDisplay.innerText = 'Click to Place Towers!'
         document.getElementById('secondMessage').innerText = 'Kill 2000 Eyes to Win!'
@@ -384,12 +385,16 @@ document.addEventListener('keydown', function(evt) {
     })
 */
     // this should be 20ms
+    const globalCount = setInterval(globalCounter, 20)
     const runGame = setInterval(gameLoop, 20);
   })
 
 
 //============================CORE GAME LOOP=============================
 
+  function globalCounter() {
+      globalCount++;
+  }
   function gameLoop() {
     if (p === false) {
     // Clear the Cavas
@@ -397,8 +402,7 @@ document.addEventListener('keydown', function(evt) {
     despawn(arrTriangles);
     despawn(arrProjectiles);
     //despawn(arrSquares);
-    globalCount++;
-    spawnRandomTriangles(113 + (-15.6*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
+    spawnRandomTriangles(64.8 + (-8.77*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
@@ -598,6 +602,7 @@ function checkWin(arr) {
         ctx.fillText("Press P to Unpause", 350, 280)
         p = true;
         won = true;
+        winPause = globalCount + 200;
         }
     }
 

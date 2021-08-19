@@ -6,7 +6,6 @@ Ideas:
     2a. Different shapes can do different things 
 3. Towers fight the shapes. Players place towers. 
     3a. Towers shoot at shapes. 
-    3b. 
 4. Shapes move from left of screen to the right
     4a. If shapes get all the way to the right player loses 
 
@@ -33,3 +32,4 @@ Turret Ideas:
 3. Short Range Turrets 
 4. Booster Turrets that Boost turrets around it? 
 5. Shield Turrets? 
+6. Laser Turret? 
