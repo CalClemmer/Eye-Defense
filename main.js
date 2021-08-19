@@ -7,7 +7,10 @@ let score = 0;
 let money = 600;
 let p = true;
 let lost = false;
+let won = false;
 const ctx = game.getContext('2d');
+let eyeball = new Image();
+eyeball.src = 'Eyeball.png'
 
 const arrProjectiles = [];
 const arrTriangles = [];
@@ -34,7 +37,11 @@ class Triangle {
     }
 
     render() {
+
+        ctx.drawImage(eyeball, this.x - 10, this.y - 20, 42, 42);
     // Draw a triangle
+        
+/* 
     ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.x + this.length, this.y);
@@ -42,7 +49,7 @@ class Triangle {
         // ctx.fillStyle = '#228B22';
         ctx.fillStyle = this.color;
         ctx.fill();
-    
+*/ 
         this.x += this.speed;
     }
 }
@@ -280,12 +287,12 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 */
 
-// Create Thing at Click
+// =====================Create Thing at Click====================
 game.addEventListener("click", function(e) {
     if (lost === false) {
         p = false;
         messageDisplay.innerText = 'Click to Place Towers!'
-        document.getElementById('secondMessage').innerText = 'Kill 1500 Triangles to Win!'
+        document.getElementById('secondMessage').innerText = 'Kill 2000 Eyes to Win!'
     }
 // Making sure I can't spawn it off screen
     if (e.offsetX - 15 > 10 && e.offsetY - 15 > 10 && e.offsetX - 15 < 840 && e.offsetY - 15 < 400 && 
@@ -298,6 +305,17 @@ game.addEventListener("click", function(e) {
         document.getElementById('money').innerText = 'Money: ' + money;
 
         } 
+    }
+})
+
+// Pause! :D 
+document.addEventListener('keydown', function(evt) {
+    if (evt.key === 'p' && lost === false) {
+      if (p === false) {
+          p = true;
+        } else {
+            p = false;
+        }
     }
 })
 
@@ -336,7 +354,7 @@ game.addEventListener("click", function(e) {
         arrTriangles.push(redTriangle);
     } 
 */ 
-
+/*
 
 document.addEventListener('keydown', function(evt) {
     if (evt.key === 't') {
@@ -348,6 +366,7 @@ document.addEventListener('keydown', function(evt) {
       
     }
 })
+
 
 // Fire Gun on B
     document.addEventListener('keydown', function(evt) {
@@ -363,9 +382,11 @@ document.addEventListener('keydown', function(evt) {
         console.log('aimAngle, angle', turret.aimAngle, turret.angle);
         }
     })
+*/
     // this should be 20ms
     const runGame = setInterval(gameLoop, 20);
   })
+
 
 //============================CORE GAME LOOP=============================
 
@@ -377,7 +398,7 @@ document.addEventListener('keydown', function(evt) {
     despawn(arrProjectiles);
     //despawn(arrSquares);
     globalCount++;
-    spawnRandomTriangles(109 + (-14.8*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
+    spawnRandomTriangles(113 + (-15.6*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
@@ -452,8 +473,13 @@ function spawnRandomTriangles(frequency) {
         frequency = Math.round(frequency);
     }
 
+    let distanceLimit = 29;
+    if (frequency <= 2) {
+        distanceLimit = 23;
+    }
+
     
-    if (Math.random() < 0.01) {
+    if (globalCount % 100 === 0) {
         console.log(frequency);
     }
 
@@ -463,7 +489,7 @@ function spawnRandomTriangles(frequency) {
 
         
         while (escape < 10) {
-            if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > 29 || arrTriangles.length === 0) {
+            if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > distanceLimit || arrTriangles.length === 0) {
                 escape = 10;
                 arrTriangles.push(triangle);
             } else {
@@ -516,9 +542,14 @@ function findClosest(x, y, arr, value) {
         closest[1] -= 2;
     // let's try to lead the enemy
     // distance * speed / bullet speed 
+    // distance * speed 
     // I'm still slightly off but not sure how, it's definitely an improvement though 
         if (closest[3] !== 0) {
-            closest[0] += (closest[2] * closest[3] / 2);
+            if (closest[0] < x) {
+                closest[0] += (closest[2] * closest[3] / (2.6)) //(2.8)); // magic correction
+            } else {
+                closest[0] += (closest[2] * closest[3] / (1))
+            }
         }
     }
     if (value === 'distance') {
@@ -551,17 +582,22 @@ function checkLose(arr) {
             ctx.fillStyle = 'red'
             ctx.font = "80px Andale Mono"
             ctx.fillText("GAME OVER", 240, 240)
+            ctx.font = "20px Andale Mono bold"
+            ctx.fillText("Press Enter to Restart")
+            // Add reset function 
         }
     }
 }
 
 function checkWin(arr) {
-    if (score > 1500) {
-        lost = true;
-        p = true;
+    if (score >= 2000 && won === false) {
         ctx.fillStyle = 'goldenrod'
-        ctx.font = "80px Andale Mono"
+        ctx.font = "80px Andale Mono bold"
         ctx.fillText("YOU WIN!", 250, 240)
+        ctx.font = "20px Andale Mono bold"
+        ctx.fillText("Press P to Unpause", 350, 280)
+        p = true;
+        won = true;
         }
     }
 
@@ -573,3 +609,4 @@ function bulletRange() {
         }
     }
 }
+
