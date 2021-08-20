@@ -38,48 +38,10 @@ class Triangle {
     }
 
     render() {
-
         ctx.drawImage(eyeball, this.x - 10, this.y - 20, 42, 42);
-    // Draw a triangle
-        
-/* 
-    ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x + this.length, this.y);
-        ctx.lineTo(this.x + (0.5 * this.length), this.y - (0.8660254 * this.length));
-        // ctx.fillStyle = '#228B22';
-        ctx.fillStyle = this.color;
-        ctx.fill();
-*/ 
         this.x += this.speed;
     }
 }
-
-/* 
-class RedTriangle {
-    constructor(x, y, color, length, speed) {
-        this.x = x
-        this.y = y
-        this.color = color
-        this.length = length
-        this.speed = speed
-        this.alive = true
-    }
-
-    render() {
-    // Draw a Triangle
-    ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x + this.length, this.y);
-        ctx.lineTo(this.x + (0.5 * this.length), this.y - (0.8660254 * this.length));
-        // ctx.fillStyle = '#228B22';
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    
-        this.x += this.speed;
-    }
-}
-*/
 
 class Spinner {
     constructor(x, y) {
@@ -233,13 +195,7 @@ class Turret {
     shoot() {
         const bullet = new Bullet(this.x+15, this.y+15, this.angle, 2, 3, 800); 
         arrProjectiles.push(bullet);
-    }
-;
-    /*
-    shoot() {
-       bullet = new Bullet(this.x + 15, this.y, this.angle, 1.5);
-    }
-    */
+    };
 }
 
 class Bullet {
@@ -268,25 +224,6 @@ class Bullet {
 
 // ======================EVENT LISTENERS=======================
 document.addEventListener('DOMContentLoaded', function() {
-    // triangle = new Triangle(100, 200, '#228B22', 21, 1);
-    // turret = new Turret(600, 200, Math.PI*0.5);
-    // spinner = new Spinner(500, 250);
-    // arrTriangles.push(triangle);
-    //arrTurrets.push(turret);
-    //arrTurrets.push(spinner);
-    // spawn5Triangles(0, 200);
-
-// ==========================DEBUGGING===========================
-
-// Create Bullet at Click
-/*
-    game.addEventListener("click", function(e) {
-        const bullet = new Bullet(e.offsetX, e.offsetY, 0, 0);
-        arrProjectiles.push(bullet);
-        console.log(arrProjectiles[arrProjectiles.length - 1].y);
-        console.log(arrProjectiles[arrProjectiles.length - 1].x)
-    })
-*/
 
 // =====================Create Thing at Click====================
 game.addEventListener("click", function(e) {
@@ -299,7 +236,7 @@ game.addEventListener("click", function(e) {
     if (e.offsetX - 15 > 10 && e.offsetY - 15 > 10 && e.offsetX - 15 < 840 && e.offsetY - 15 < 400 && 
         (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0)) {
 
-        if (money >= 100) {
+        if (money >= 100 && p === false) {
         const turret = new Turret(e.offsetX - 15, e.offsetY - 15)
         arrTurrets.push(turret);
         money -= 100;
@@ -320,70 +257,6 @@ document.addEventListener('keydown', function(evt) {
     }
 })
 
-    /* 
-        if (buildSelect === 'triangle') {
-        const triangle = new Triangle(e.offsetX, e.offsetY, '#228B22', 21, 1);
-        arrTriangles.push(triangle);
-        console.log(arrTriangles[arrTriangles.length - 1].y);
-        console.log(arrTriangles[arrTriangles.length - 1].x);
-        console.log(arrTriangles[arrTriangles.length -1]);
-    }
-    */
-
-    /*
-        if (findClosest(e.offsetX - 15, e.offsetY - 15, arrTurrets, 'distance') > 35 || arrTurrets.length === 0) {
-
-            if (buildSelect === 'turret' && money >= 100) {
-            const turret = new Turret(e.offsetX - 15, e.offsetY - 15)
-            arrTurrets.push(turret);
-            money -= 100;
-            document.getElementById('money').innerText = 'Money: ' + money;
-
-            }   else if (buildSelect === 'spinner' && money >= 200) {
-            const spinner = new Spinner(e.offsetX, e.offsetY)
-            arrTurrets.push(spinner);
-            money -= 200;
-            document.getElementById('money').innerText = 'Money: ' + money;
-            }  
-        }
-})
-
-*/
-/* 
-    if (buildSelect === 'redTriangle') {
-        const redTriangle = new RedTriangle(e.offsetX, e.offsetY, 'red', 24, 1);
-        arrTriangles.push(redTriangle);
-    } 
-*/ 
-/*
-
-document.addEventListener('keydown', function(evt) {
-    if (evt.key === 't') {
-      if (buildSelect === 'spinner') {
-          buildSelect = 'turret';
-      } else {
-          buildSelect = 'spinner';
-      } 
-      
-    }
-})
-
-
-// Fire Gun on B
-    document.addEventListener('keydown', function(evt) {
-        if (evt.key === 'b') {
-          turret.shoot();
-        }
-    })
-
-// Aim Turret on F
-    document.addEventListener('keydown', function(evt) {
-        if (evt.key === 'f') {
-        turret.aim();
-        console.log('aimAngle, angle', turret.aimAngle, turret.angle);
-        }
-    })
-*/
     // this should be 20ms
     const globalCount = setInterval(globalCounter, 20)
     const runGame = setInterval(gameLoop, 20);
@@ -402,12 +275,10 @@ document.addEventListener('keydown', function(evt) {
     despawn(arrTriangles);
     despawn(arrProjectiles);
     //despawn(arrSquares);
-    spawnRandomTriangles(64.8 + (-8.77*Math.log(score)));   //old calc (100 - 4*Math.sqrt(score));
+    spawnRandomTriangles(0.8*(64.8 + (-8.77*Math.log(score))));   //old calc (100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
-    // arrSpinners.forEach(element => element.render());
-    // arrSquares.forEach(element => element.render());
     detectBulletHit(arrTriangles);
     detectTurretHit();
     bulletRange();
@@ -584,10 +455,14 @@ function checkLose(arr) {
             lost = true;
             p = true;
             ctx.fillStyle = 'red'
-            ctx.font = "80px Andale Mono"
-            ctx.fillText("GAME OVER", 240, 240)
-            ctx.font = "20px Andale Mono bold"
-            ctx.fillText("Press Enter to Restart")
+            ctx.font = "120px Arial"
+            ctx.fillText("GAME OVER", 80, 250)        
+            ctx.strokeStyle = 'black'
+            ctx.lineWidth = '3' 
+            ctx.strokeText("GAME OVER", 80, 250)
+            
+            // if i ever add a restart function this will revived 
+            //ctx.fillText("Press Enter to Restart", 325, 280)
             // Add reset function 
         }
     }
@@ -596,10 +471,15 @@ function checkLose(arr) {
 function checkWin(arr) {
     if (score >= 2000 && won === false) {
         ctx.fillStyle = 'goldenrod'
-        ctx.font = "80px Andale Mono bold"
-        ctx.fillText("YOU WIN!", 250, 240)
-        ctx.font = "20px Andale Mono bold"
-        ctx.fillText("Press P to Unpause", 350, 280)
+        ctx.font = "120px Arial"
+        ctx.fillText("YOU WIN!", 160, 240)
+        ctx.strokeStyle = 'black'
+        ctx.lineWidth = '3' 
+        ctx.strokeText("YOU WIN!", 160, 240)
+        ctx.font = "50px Arial"
+        ctx.fillText("Press P to Unpause", 220, 300)
+        ctx.lineWidth = '2'
+        ctx.strokeText("Press P to Unpause", 220, 300)
         p = true;
         won = true;
         winPause = globalCount + 200;
