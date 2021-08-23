@@ -24,8 +24,8 @@ Kill 2000 Eyes to Win!
 # Some Code Snippets
 ==========================================================
 
-1. <b>Aiming the Turret</b><br>
-This method on the turret class finds the closest enemy, then calculates the angle between the turret and that enemy. <br>
+1.  <b>Aiming the Turret</b><br>
+This method on the turret class finds the closest enemy, then calculates the angle between the turret and that enemy. This calculated angle is set as the "aimAngle"<br>
     ```javascript
     aim() {
         let closestEnemy = findClosest(this.x, this.y, arrTriangles);
@@ -38,7 +38,8 @@ This method on the turret class finds the closest enemy, then calculates the ang
             this.aimAngle = Math.PI;
         }
 
-        // this code lets it complete the circle! Otherwise 
+        // this code lets it complete the circle! Otherwise turret will never cross the Pi rad (180 degree) angle, and spin the other way around instead even when that path is far longer
+        // Essentially we're trying to keep the angle between 0 and 2PI rad
 
         if ((this.aimAngle + 2*Math.PI - this.angle) < Math.PI) {
             this.aimAngle += 2*Math.PI;
@@ -47,3 +48,39 @@ This method on the turret class finds the closest enemy, then calculates the ang
         }
     }
     ```
+
+ This code, part of the render class on the turret, and adjusts the angle of the turret barrel to match up with the aim angle. It has a course aim that quickly moves the turret barrel and a fine aim that more precisely lines up the barrel. 
+
+```javascript 
+         // course aim 
+        if (this.angle + 0.04 < this.aimAngle) {
+            this.angle += 0.04;
+        } else if (this.angle - 0.04 > this.aimAngle) {
+            this.angle -= 0.04;
+
+        // fine aim 
+        } else if (this.angle + 0.004 < this.aimAngle) {
+            this.angle += 0.004;
+        } else if (this.angle - 0.004 < this.aimAngle) {
+            this.angle += 0.004;
+        }
+```
+
+2. <b>Despawning Off Screen Projectiles</b><br>
+If projectiles could continue off the screen forever, the game would quickly come to a laggy stop. To prevent this, this simple function checks if a given object is off screen, and despawns it if it is.  
+  
+```javascript 
+function despawn(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        if (
+            arr[i].x < -50 || arr[i].x > 950 
+            ||
+            arr[i].y < -50 || arr[i].y > 460
+        ) {
+            arr.splice(i, 1);
+            i--;
+        }
+    }
+}
+```
+3. 

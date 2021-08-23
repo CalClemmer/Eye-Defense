@@ -280,7 +280,7 @@ document.addEventListener('keydown', function(evt) {
     arrTurrets.forEach(element => element.render());
     detectBulletHit(arrTriangles);
     detectTurretHit();
-    bulletRange();
+    //bulletRange();
     checkLose(arrTriangles);
     checkWin(arrTriangles);
     //triangle.render();
