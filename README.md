@@ -3,6 +3,8 @@
 
 SEI 802 Project 1: Eye Defense
 
+![EyeDefense](EyeDefense.png)
+
 A simple tower defense game built by Cal Clemmer
 
 To play Eye Defense online, visit https://calclemmer.github.io/ProjectOneGame/
@@ -14,7 +16,12 @@ The Eyes are attacking! If an Eye makes it to the right side of the screen, it's
   
 Press to Pause/Unpause 
 
-Kill 2000 Eyes to Win! 
+Kill 2000 Eyes to Win!  
+  
+
+![What losing looks like](GameOver.png)
+
+This is what losing looks like
 
 # How to Install 
 ==========================================================
@@ -49,7 +56,7 @@ This method on the turret class finds the closest enemy, then calculates the ang
     }
     ```
 
- This code, part of the render class on the turret, and adjusts the angle of the turret barrel to match up with the aim angle. It has a course aim that quickly moves the turret barrel and a fine aim that more precisely lines up the barrel. 
+2. <b>Rotating the Turret Barrel</b> This code, part of the render class on the turret, and adjusts the angle of the turret barrel to match up with the aim angle. It has a course aim that quickly moves the turret barrel and a fine aim that more precisely lines up the barrel. 
 
 ```javascript 
          // course aim 
@@ -66,8 +73,8 @@ This method on the turret class finds the closest enemy, then calculates the ang
         }
 ```
 
-2. <b>Despawning Off Screen Projectiles</b><br>
-If projectiles could continue off the screen forever, the game would quickly come to a laggy stop. To prevent this, this simple function checks if a given object is off screen, and despawns it if it is.  
+3. <b>Despawning Off Screen Projectiles</b><br>
+If projectiles could continue off the screen forever, the game would quickly come to a laggy stop. To prevent this, this simple function checks if a given object's x or y position place it off screen and despawns it if it is. 
   
 ```javascript 
 function despawn(arr) {
@@ -82,5 +89,78 @@ function despawn(arr) {
         }
     }
 }
+```  
+
+4.  <b>Spawning New Enemies</b><br>  
+   
+   Enemies are an integral part of the game, and the game difficulty increases by increasing the rate at which enemies spawn. Whenever the global count is a multiple of the frequency, the game attempts to spawn an Eye at a random Y coordinate slightly off screen. After picking a spawn location, the game checks to make sure no other Eyes are too close to that location to prevent overlapping. If there is overlapping, the game will repeat the process up to 10 times to try to find a suitable spot. If no spot is found, the game simply won't spawn the eye.  
+     
+   At extremely high spawn rates, the game aloows the eyes to spawn slightly closer together. 
+
+```javascript 
+function spawnRandomTriangles(frequency) {
+    if (frequency > 100) {
+        frequency = 100;
+    }
+    if (frequency < 1) {
+        frequency = 1;
+    } else {
+        frequency = Math.round(frequency);
+    }
+
+// Allows eyes to spawn closer together at high spawn rates  
+    let distanceLimit = 29;
+    if (frequency <= 2) {
+        distanceLimit = 23;
+    }
+
+    if (globalCount % 100 === 0) {
+        console.log(frequency);
+    }
+    
+    if (globalCount % frequency === 0) {
+        let escape = 0;
+        // new Triangle(x, y, color, width, speed))
+        const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
+
+        while (escape < 10) {
+            if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > distanceLimit || arrTriangles.length === 0) {
+                escape = 10;
+                arrTriangles.push(triangle);
+            } else {
+                triangle.y = Math.random()*400 + 20;
+                escape ++;
+            }
+        
+        }
+    
+    }
+}
 ```
-3. 
+
+5. <b>Hit Detection</b><br> 
+ 
+ Hit detection is an essential part of this game, and the game is constantly checking if objects have collided. The function first checks to make sure that there is at least one Turret and at least one Eye. The function then checks if an Eye has an x position and y position that cause it to overlap with the turrets. If there is an overlap, both the Eye and the Turret are destroyed. This collision check is repeated for all turrets and all eyes.   
+
+ A very similar collision check is used to check if any bullets have collided with any turrets.
+   
+```javascript
+   function detectTurretHit() {
+    if (arrTurrets.length > 0 && arrTriangles.length > 0)
+    for (let i = 0; i < arrTurrets.length; i++) {
+        for (let j = 0; j < arrTriangles.length; j++) {
+            if (arrTurrets[i] && arrTriangles[j].x) {
+            if (arrTurrets[i].x < arrTriangles[j].x + arrTriangles[j].length &&
+                arrTurrets[i].x + 30 > arrTriangles[j].x &&
+                arrTurrets[i].y + 30 > arrTriangles[j].y - 18 &&
+                arrTurrets[i].y < arrTriangles[j].y + 2
+                ) 
+                {
+                    arrTurrets.splice(i, 1);
+                    arrTriangles.splice(j, 1);
+                }
+            }
+        }
+    }
+}
+```
