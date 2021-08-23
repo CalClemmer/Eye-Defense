@@ -25,8 +25,7 @@ game.setAttribute("width", getComputedStyle(game)["width"]);
 // ======================CLASSES==========================
 
 
-// const arrSquares = [];
-
+// The eyes used to be triangles, thus the name 
 class Triangle {
     constructor(x, y, color, length, speed) {
         this.x = x

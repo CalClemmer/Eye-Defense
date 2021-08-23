@@ -1,35 +1,49 @@
 # ProjectOneGame
 ==========================================================
-Ideas: 
-1. Tower defense game
-2. Enemies are Shapes 
-    2a. Different shapes can do different things 
-3. Towers fight the shapes. Players place towers. 
-    3a. Towers shoot at shapes. 
-4. Shapes move from left of screen to the right
-    4a. If shapes get all the way to the right player loses 
 
-Debug: 
+SEI 802 Project 1: Eye Defense
 
-Press T to toggle build mode
-Pressing T will toggle between building triangles or turrets 
-Click to place 
+A simple tower defense game built by Cal Clemmer
 
-Buglist: 
+To play Eye Defense online, visit https://calclemmer.github.io/ProjectOneGame/
 
-Ideas: 
-1. could spawn "ghost shapes" off screen that don't fully load in till they reach screen, then all the shapes could be loaded with a single position array...? Or I could just randomly spawn shapes in. Or both?
-2. loading screen can be made with a bunch of shapes 
+# How to Play 
+==========================================================
 
-Enemy Ideas:
-1. Circle becomes bomb once it's hit? Maybe circle bounces when it's hit like a shield? 
-2. Shape that splits? 
-3. Shape that shoots at Turrets? 
+The Eyes are attacking! If an Eye makes it to the right side of the screen, it's game over. Click on the screen to place towers to fight off the monsters! Place the towers wisely, it costs $100 to place a tower. Even worse, if an eye touches a tower it'll destroy the tower. Kill Eyes to get more money, build towers to protect yourself, and keep the ever growing hoards of Eyes at bay.  
+  
+Press to Pause/Unpause 
 
-Turret Ideas:
-1. Money Turrets
-2. Sniper Turrets 
-3. Short Range Turrets 
-4. Booster Turrets that Boost turrets around it? 
-5. Shield Turrets? 
-6. Laser Turret? 
+Kill 2000 Eyes to Win! 
+
+# How to Install 
+==========================================================
+1. <code>Fork</code> and <code>Clone</code> this repository to your local machine 
+2. Open index.html in a browser to play 
+
+# Some Code Snippets
+==========================================================
+
+1. <b>Aiming the Turret</b><br>
+This method on the turret class finds the closest enemy, then calculates the angle between the turret and that enemy. <br>
+    ```javascript
+    aim() {
+        let closestEnemy = findClosest(this.x, this.y, arrTriangles);
+
+    // magic to find angle 
+
+        if (closestEnemy !== undefined) {
+        this.aimAngle = Math.atan2(closestEnemy[1] - (this.y+15), closestEnemy[0] - (this.x+15));
+        } else {
+            this.aimAngle = Math.PI;
+        }
+
+        // this code lets it complete the circle! Otherwise 
+
+        if ((this.aimAngle + 2*Math.PI - this.angle) < Math.PI) {
+            this.aimAngle += 2*Math.PI;
+        } else if ((this.aimAngle - 2*Math.PI + this.angle) > Math.PI) {
+            this.aimAngle -= 2*Math.PI;
+        }
+    }
+    ```
