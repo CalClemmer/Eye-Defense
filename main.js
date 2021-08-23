@@ -228,8 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
 game.addEventListener("click", function(e) {
     if (lost === false && winPause < globalCount) {
         p = false;
-        messageDisplay.innerText = 'Click to Place Towers!'
-        document.getElementById('secondMessage').innerText = 'Kill 2000 Eyes to Win!'
+        messageDisplay.innerText = 'Click to Place Towers! Towers cost $100!'
+        document.getElementById('secondMessage').innerText = 'Kill Eyes for Money! Kill 2000 Eyes to Win!'
+        messageDisplay.style.fontSize = '20px'
     }
 // Making sure I can't spawn it off screen
     if (e.offsetX - 15 > 10 && e.offsetY - 15 > 10 && e.offsetX - 15 < 840 && e.offsetY - 15 < 400 && 
@@ -269,7 +270,7 @@ document.addEventListener('keydown', function(evt) {
   }
   function gameLoop() {
     if (p === false) {
-    // Clear the Cavas
+    // Clear the Canvas
     ctx.clearRect(0, 0, game.width, game.height);
     despawn(arrTriangles);
     despawn(arrProjectiles);
@@ -444,7 +445,7 @@ function despawn(arr) {
             i--;
         }
     }
-}\
+}
 
 function checkLose(arr) {
     for (let i = 0; i < arr.length; i++) {
