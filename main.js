@@ -275,7 +275,7 @@ document.addEventListener('keydown', function(evt) {
     despawn(arrTriangles);
     despawn(arrProjectiles);
     //despawn(arrSquares);
-    spawnRandomTriangles(0.8*(64.8 + (-8.77*Math.log(score))));   //old calc (100 - 4*Math.sqrt(score));
+    spawnRandomTriangles(0.9*(64.8 + (-8.77*Math.log(score))));   //old calc (100 - 4*Math.sqrt(score));
     arrProjectiles.forEach(element => element.render());
     arrTriangles.forEach(element => element.render());
     arrTurrets.forEach(element => element.render());
