@@ -230,7 +230,8 @@ game.addEventListener("click", function(e) {
         p = false;
         messageDisplay.innerText = 'Click to Place Towers! Towers cost $100!'
         document.getElementById('secondMessage').innerText = 'Kill Eyes for Money! Kill 2000 Eyes to Win!'
-        messageDisplay.style.fontSize = '20px'
+        messageDisplay.style.fontSize = '24px'
+        document.getElementById('secondMessage').style.fontSize = '24px'
     }
 // Making sure I can't spawn it off screen
     if (e.offsetX - 15 > 10 && e.offsetY - 15 > 10 && e.offsetX - 15 < 840 && e.offsetY - 15 < 400 && 
