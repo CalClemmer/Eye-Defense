@@ -9,10 +9,10 @@ A simple tower defense game built by Cal Clemmer
 
 To play Eye Defense online, visit https://calclemmer.github.io/ProjectOneGame/
 
-# How to Play 
+# How to Play
 ==========================================================
 
-The Eyes are attacking! If an Eye makes it to the right side of the screen, it's game over. Click on the screen to place towers to fight off the monsters! Place the towers wisely, it costs $100 to place a tower. Even worse, if an eye touches a tower it'll destroy the tower. Kill Eyes to get more money, build towers to protect yourself, and keep the ever growing hoards of Eyes at bay.  
+The Eyes are attacking! If an Eye makes it to the right side of the screen, it's game over. Click on the screen to place towers to fight off the monsters! Place the towers wisely, it costs $100 to place a tower. Watch out, if an eye touches a tower it'll destroy the tower. Kill Eyes to get more money, build towers to protect yourself, and keep the ever growing hoards of Eyes at bay.  
   
 Press to Pause/Unpause 
 

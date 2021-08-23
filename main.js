@@ -352,7 +352,6 @@ function spawnRandomTriangles(frequency) {
         distanceLimit = 23;
     }
 
-    
     if (globalCount % 100 === 0) {
         console.log(frequency);
     }
@@ -361,7 +360,6 @@ function spawnRandomTriangles(frequency) {
         let escape = 0;
         const triangle = new Triangle(-25, Math.random()*400 + 20, '#228B22', 21, 1);
 
-        
         while (escape < 10) {
             if (findClosest(triangle.x + 11, triangle.y + 9, arrTriangles, 'distance') > distanceLimit || arrTriangles.length === 0) {
                 escape = 10;
@@ -446,7 +444,7 @@ function despawn(arr) {
             i--;
         }
     }
-}
+}\
 
 function checkLose(arr) {
     for (let i = 0; i < arr.length; i++) {
