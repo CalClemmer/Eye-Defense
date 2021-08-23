@@ -56,10 +56,10 @@ This method on the turret class finds the closest enemy, then calculates the ang
     }
     ```
 
-2. <b>Rotating the Turret Barrel</b> This code, part of the render class on the turret, and adjusts the angle of the turret barrel to match up with the aim angle. It has a course aim that quickly moves the turret barrel and a fine aim that more precisely lines up the barrel. 
+2. <b>Rotating the Turret Barrel</b> This code, part of the render class on the turret, adjusts the angle of the turret barrel to match up with the aim angle. It has a course aim that quickly moves the turret barrel and a fine aim that more precisely lines up the barrel. 
 
 ```javascript 
-         // course aim 
+         // coarse aim 
         if (this.angle + 0.04 < this.aimAngle) {
             this.angle += 0.04;
         } else if (this.angle - 0.04 > this.aimAngle) {
