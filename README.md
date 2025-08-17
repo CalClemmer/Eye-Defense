@@ -7,7 +7,7 @@ SEI 802 Project 1: Eye Defense
 
 A simple tower defense game built by Cal Clemmer
 
-To play Eye Defense online, visit https://calclemmer.github.io/ProjectOneGame/
+To play Eye Defense online, visit https://calclemmer.github.io/Eye-Defense/
 
 # How to Play
 ==========================================================
