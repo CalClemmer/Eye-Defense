@@ -95,7 +95,7 @@ function despawn(arr) {
    
    Enemies are an integral part of the game, and the game difficulty increases by increasing the rate at which enemies spawn. Whenever the global count is a multiple of the frequency, the game attempts to spawn an Eye at a random Y coordinate slightly off screen. After picking a spawn location, the game checks to make sure no other Eyes are too close to that location to prevent overlapping. If there is overlapping, the game will repeat the process up to 10 times to try to find a suitable spot. If no spot is found, the game simply won't spawn the eye.  
      
-   At extremely high spawn rates, the game aloows the eyes to spawn slightly closer together. 
+   At extremely high spawn rates, the game allows the eyes to spawn slightly closer together. 
 
 ```javascript 
 function spawnRandomTriangles(frequency) {
